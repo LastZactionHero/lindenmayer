@@ -24,3 +24,19 @@ lsystem = Lindenmayer::LSystem.new('A[X]BC', 'A<B>C' => 'Z')
 lsystem.iterate
 =>  'A[X]ZC'
 ```
+
+### Stochastic Productions
+
+Supports stochastic productions. Weights must sum to 1. Takes an optional `Random` to reproduce results if you want to use the same seed.
+
+```
+random = Random.new(seed_value)
+lsystem = Lindenmayer::LSystem.new('F', {'F' => { successors: [
+                                     { successor: 'AF', weight: 0.5 },
+                                     { successor: 'BF', weight: 0.5 }
+                                   ] }},
+                                   random: random)
+
+lsystem.iterate
+=> 'AF'
+```

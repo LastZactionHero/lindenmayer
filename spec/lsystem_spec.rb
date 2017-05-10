@@ -51,23 +51,38 @@ describe 'LSystem' do
       end
 
       describe 'stochastic systems' do
-        # it 'iterates a stochastic system' do
-        #   random = Random.new(1) # Seed the random number generator
-        #   lsystem = Lindenmayer::LSystem.new('F', 'F' => { successors: [
-        #                                        { successor: 'AF', weight: 0.5 },
-        #                                        { successor: 'BF', weight: 0.5 }
-        #                                      ] },
-        #                                      random: random)
-        # 
-        #   expect(lsystem.iterate).to eq('AF')
-        # end
+        let(:random) { Random.new(1) } # Seed the random number generator
+
+        it 'iterates a stochastic system' do
+          lsystem = Lindenmayer::LSystem.new('F', {'F' => { successors: [
+                                               { successor: 'AF', weight: 0.5 },
+                                               { successor: 'BF', weight: 0.5 }
+                                             ] }},
+                                             random: random)
+
+          # Both weighted 50%, unlikely to get this right 4 times
+          expect(lsystem.iterate).to eq('AF')
+          expect(lsystem.iterate).to eq('ABF')
+          expect(lsystem.iterate).to eq('ABAF')
+          expect(lsystem.iterate).to eq('ABAAF')
+        end
 
         it 'supports a context-sensitive stochastic system' do
+          lsystem = Lindenmayer::LSystem.new('ZF', {'Z<F' => { successors: [
+                                               { successor: 'AF', weight: 0.5 },
+                                               { successor: 'BF', weight: 0.5 }
+                                             ] }},
+                                             random: random)
 
+          expect(lsystem.iterate).to eq('ZAF')
+          expect(lsystem.iterate).to eq('ZABF')
         end
 
         it 'raises an expection if probabilities to not add to 1' do
-
+          expect( -> {Lindenmayer::LSystem.new('F', {'F' => { successors: [
+                                               { successor: 'AF', weight: 0.6 },
+                                               { successor: 'BF', weight: 0.5 }
+                                             ] }})}).to raise_error(Lindenmayer::InvalidProductionError)
         end
       end
     end
