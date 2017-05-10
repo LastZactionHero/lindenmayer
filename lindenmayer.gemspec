@@ -6,6 +6,7 @@ Gem::Specification.new do |s|
   s.description = 'L-System implementation'
   s.authors     = ['Zach Dicklin']
   s.email       = 'zdicklin@gmail.com'
-  s.files       = ['lib/lsystem.rb']
+  s.files       = ['lib/lsystem.rb', 'lib/context_sensitive_production.rb', 'lib/production.rb']
   s.license     = 'MIT'
+  s.homepage    = 'https://github.com/LastZactionHero/lindenmayer'
 end
