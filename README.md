@@ -14,3 +14,13 @@ lsystem = Lindenmayer::LSystem.new('F++F++F',
 lsystem.iterate
 => 'F-F++F-F++F-F++F-F++F-F++F-F'
 ```
+
+### Context-Sensitive Productions
+
+Supports left-only, right-only, and left-right context-Sensitive productions.
+
+```
+lsystem = Lindenmayer::LSystem.new('A[X]BC', 'A<B>C' => 'Z')
+lsystem.iterate
+=>  'A[X]ZC'
+```

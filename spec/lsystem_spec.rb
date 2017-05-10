@@ -49,6 +49,27 @@ describe 'LSystem' do
           expect(lsystem.iterate).to eq('A[X]BD')
         end
       end
+
+      describe 'stochastic systems' do
+        # it 'iterates a stochastic system' do
+        #   random = Random.new(1) # Seed the random number generator
+        #   lsystem = Lindenmayer::LSystem.new('F', 'F' => { successors: [
+        #                                        { successor: 'AF', weight: 0.5 },
+        #                                        { successor: 'BF', weight: 0.5 }
+        #                                      ] },
+        #                                      random: random)
+        # 
+        #   expect(lsystem.iterate).to eq('AF')
+        # end
+
+        it 'supports a context-sensitive stochastic system' do
+
+        end
+
+        it 'raises an expection if probabilities to not add to 1' do
+
+        end
+      end
     end
   end
 end

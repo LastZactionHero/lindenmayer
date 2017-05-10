@@ -4,6 +4,7 @@ require 'ostruct'
 module Lindenmayer
 
   # Basic Production
+  # Replaces a single character with a string
   class Production
     attr_reader :transform
 
@@ -11,11 +12,22 @@ module Lindenmayer
     def initialize(transform)
       @transform = transform
     end
+
+    def transform(idx, context)
+      apply_transform
+    end
+
+    protected
+
+    def apply_transform
+      @transform
+    end
+
   end
 
   # Context-Sensitive Production, checks if value matches in context
   # Handles left-only, right-only, and left-right context
-  class ContextSensitiveProduction
+  class ContextSensitiveProduction < Production
     attr_reader :key
 
     # key - (string) Full key, e.g. "AB<C>DE"
@@ -32,7 +44,7 @@ module Lindenmayer
           includes_full_context?(context[0, idx], @lookbehind)) &&
          (@lookahead.nil? ||
           includes_full_context?(context[(idx + 1)..-1], @lookahead))
-        @transform
+        apply_transform
       else
         @key
       end
@@ -53,27 +65,25 @@ module Lindenmayer
 
   # Lindenmayer System
   class LSystem
-    def initialize(axiom, productions)
+    def initialize(axiom, productions, options = {})
       @axiom = axiom
 
-      @cs_productions = {}
-      cs_keys = productions.keys.select { |k| k.match(/[<>]/) }
-      cs_keys.each do |key|
-        value = productions.delete(key)
-        cs_prod = ContextSensitiveProduction.new(key, value)
-        @cs_productions[cs_prod.key] = cs_prod
-      end
-
-      @productions = productions.map { |key, transform| [key, Production.new(transform)] }.to_h
+      @productions = productions.map do |key, transform|
+        k, production = if key.match(/[<>]/)
+          cs_prod = ContextSensitiveProduction.new(key, transform)
+          [cs_prod.key, cs_prod]
+        else
+          [key, Production.new(transform)]
+        end
+        [k, production]
+      end.to_h
     end
 
     def iterate(count = 1)
       count.times do
         @axiom = @axiom.split('').each_with_index.map do |c, c_idx|
           if @productions[c]
-            @productions[c].transform
-          elsif @cs_productions[c]
-            @cs_productions[c].transform(c_idx, @axiom)
+            @productions[c].transform(c_idx, @axiom)
           else
             c
           end
